@@ -18,21 +18,65 @@
         <h2>상품 등록 폼</h2>
     </div>
 
-    <form action="item.html" th:action method="post">
+    <form action="item.html" th:action th:object="${item}" method="post">
         <div>
             <label for="itemName">상품명</label>
-            <input type="text" id="itemName" name="itemName" class="form-control" placeholder="이름을 입력하세요">
+            <!--/* th:field 는 id 와 name, value 에 자동으로 th:object 와 매칭해준다. *은 item 에 속한다는 뜻으로 알면된다. 그냥 ${item.itemName} 해도 됌! */-->
+            <!--/* id, name 지워도 되는데, 그냥 남겨둠. id는 */-->
+            <input type="text" id="itemName" name="itemName" th:field="*{itemName}" class="form-control" placeholder="이름을 입력하세요">
         </div>
         <div>
             <label for="price">가격</label>
-            <input type="text" id="price" name="price" class="form-control" placeholder="가격을 입력하세요">
+            <input type="text" id="price" name="price" th:field="*{price}" class="form-control" placeholder="가격을 입력하세요">
         </div>
         <div>
             <label for="quantity">수량</label>
-            <input type="text" id="quantity" name="quantity" class="form-control" placeholder="수량을 입력하세요">
+            <input type="text" id="quantity" name="quantity" th:field="*{quantity}" class="form-control" placeholder="수량을 입력하세요">
         </div>
 
         <hr class="my-4">
+
+        <!-- single checkbox -->
+        <div>판매 여부</div>
+        <div>
+            <div class="form-check">
+                <input type="checkbox" id="open" th:field="*{open}" class="form-check-input">
+                <label for="open" class="form-check-label">판매 오픈</label>
+            </div>
+        </div>
+
+        <!-- multi checkbox -->
+        <div>
+            <div>등록 지역</div>
+            <div th:each="region : ${regions}" class="form-check form-check-inline">
+                <input type="checkbox" th:field="${item.regions}" th:value="${region.key}" class="form-check-input">
+                <!-- 반복문에서 id를 각각 지정할 수 없으므로, #ids로 지정할 수 있게 지원해주는 것. -->
+                <label th:for="${#ids.prev('regions')}"
+                       th:text="${region.value}" class="form-check-label">서울</label>
+            </div>
+        </div>
+
+        <!-- radio button -->
+        <div>
+            <div>상품 종류</div>
+            <div th:each="type : ${itemTypes}" class="form-check form-check-inline">
+                <input type="radio" th:field="*{itemType}" th:value="${type.name()}" class="form-check-input">
+                <label th:for="${#ids.prev('itemType')}" th:text="${type.description}" class="form-check-label">
+                    type.description
+                </label>
+            </div>
+        </div>
+
+        <!-- SELECT -->
+        <div>
+            <div>배송 방식</div>
+            <select th:field="*{deliveryCode}" class="form-select">
+                <!-- 기본방식은 value = "" 으로 해둔다. -->
+                <option value="">==배송 방식 선택==</option>
+                <option th:each="deliveryCode : ${deliveryCodes}" th:value="${deliveryCode.code}"
+                        th:text="${deliveryCode.displayName}">배송방식</option>
+            </select>
+        </div>
 
         <div class="row">
             <div class="col">
