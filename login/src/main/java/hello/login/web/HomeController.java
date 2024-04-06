@@ -2,6 +2,7 @@ package hello.login.web;
 
 import hello.login.domain.member.Member;
 import hello.login.domain.member.MemberRepository;
+import hello.login.web.argumentresolver.Login;
 import hello.login.web.session.SessionManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -86,9 +87,22 @@ public class HomeController {
     }
 
     // 세션을 찾아서 loginMember 에 넣어준다.
+//    @GetMapping("/")
+    public String homeLoginV4(@SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember, Model model) {
+
+        // 세션에 회원 데이터가 없으면 home
+        if (loginMember == null) {
+            return "home";
+        }
+
+        // 세션이 유지되면 로그인
+        model.addAttribute("member", loginMember);
+        return "loginHome";
+    }
+
+    // @Login 으로 Member 가 현재 로그인 중인 것으로 간주하게 한다.
     @GetMapping("/")
-    public String homeLoginV4(
-            @SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember, Model model) {
+    public String homeLoginV4ArgumentResolver(@Login Member loginMember, Model model) {
 
         // 세션에 회원 데이터가 없으면 home
         if (loginMember == null) {
