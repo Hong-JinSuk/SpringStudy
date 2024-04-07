@@ -1,10 +1,18 @@
 package hello.exception.servlet;
 
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Controller
@@ -25,11 +33,28 @@ public class ErrorPageController {
         return "error-page/404";
     }
 
-    @RequestMapping("/error-page/500")
+//    @RequestMapping("/error-page/500")
     public String errorPage500(HttpServletRequest request, HttpServletResponse response) {
         log.info("errorPage-500");
         printErrorInfo(request);
         return "error-page/500";
+    }
+
+    // 클라이언트가 받을 수 있는 data type = json 이라고 표시해준 것.
+    @RequestMapping(value = "/error-page/500", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, Object>> errorPage500Api(
+            HttpServletRequest request, HttpServletResponse response){
+
+        log.info("API errorPage 500");
+
+        Map<String, Object> result = new HashMap<>();
+        Exception ex = (Exception) request.getAttribute(ERROR_EXCEPTION); // 에러 내용 받아옴
+        result.put("status", request.getAttribute(ERROR_STATUS_CODE)); // 에러 status 받아옴
+        result.put("message", ex.getMessage()); // 에러 내용 을 message 에 매핑
+
+        Integer statusCode = (Integer) request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
+
+        return new ResponseEntity<>(result, HttpStatus.valueOf(statusCode));
     }
 
     private void printErrorInfo(HttpServletRequest request) {
