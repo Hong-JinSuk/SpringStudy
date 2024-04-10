@@ -33,7 +33,7 @@ class MemberRepositoryV0Test {
         assertThat(updatedMember.getMoney()).isEqualTo(20000);
 
         // delete
-        MemberRepositoryV0 tempRepo = repository;
+        repository.delete(member.getMemberId());
         assertThatThrownBy(() -> repository.findById(member.getMemberId()))
                 .isInstanceOf(NoSuchElementException.class);
     }
