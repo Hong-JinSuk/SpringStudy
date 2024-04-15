@@ -27,3 +27,4 @@ public class JdbcTemplateV3Config {
         return new JdbcTemplateItemRepositoryV3(dataSource);
     }
 }
+
